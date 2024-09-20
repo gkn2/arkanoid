@@ -1,6 +1,7 @@
 namespace SpriteKind {
     export const ball = SpriteKind.create()
     export const missdetector = SpriteKind.create()
+    export const typefireball = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile`, function (sprite, location) {
     bounceball(sprite)
@@ -21,6 +22,9 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile3`, function (sprite, loc
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile1`)
     info.changeScoreBy(2)
+    if (randint(0, 100) >= 50) {
+        SpawnFireball()
+    }
 })
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
     bounceball(sprite)
@@ -50,7 +54,7 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile5`, function (sprite, loc
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(5)
-    if (randint(0, 100) >= 25) {
+    if (randint(0, 100) <= 25) {
         info.changeLifeBy(1)
         paddle.changeScale(0.35, ScaleAnchor.Middle)
     }
@@ -86,6 +90,32 @@ function spawnball () {
     ball.setBounceOnWall(true)
     ball.setScale(0.35, ScaleAnchor.Middle)
 }
+function SpawnFireball () {
+    let fireballspeed = 0
+    fireball = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . 2 2 2 5 5 5 4 2 2 2 2 . . 
+        . . 4 4 5 4 5 5 5 4 4 4 4 2 2 . 
+        . . 4 5 5 1 1 1 4 4 5 5 5 2 2 . 
+        . 4 5 5 5 1 1 1 5 1 1 5 5 4 2 . 
+        . 2 2 4 1 1 5 5 5 1 1 5 5 4 2 . 
+        . 2 5 5 1 1 5 1 1 5 5 d 4 4 2 . 
+        . 2 5 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . 2 2 5 5 4 1 1 1 5 1 1 5 5 4 . 
+        . . 2 2 4 4 5 5 5 5 4 4 5 2 . . 
+        . . . 2 2 4 4 5 5 4 4 4 2 2 . . 
+        . . . 2 2 2 2 4 4 4 2 2 2 . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.typefireball)
+    ball.setPosition(73, 58)
+    fireball.setVelocity(fireballspeed, fireballspeed)
+    ball.setBounceOnWall(true)
+    ball.setScale(0.35, ScaleAnchor.Middle)
+    fireball.setVelocity(paddle.x - fireball.x, paddle.y - fireball.y)
+}
 function spawnpaddle () {
     paddle = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -108,11 +138,13 @@ function spawnpaddle () {
     paddle.setPosition(80, 110)
     controller.moveSprite(paddle, 100, 0)
     paddle.setStayInScreen(true)
+    paddle.setScale(1.2, ScaleAnchor.Middle)
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.ball, function (sprite, otherSprite) {
     bounceball(otherSprite)
     otherSprite.y = paddle.top + 1
 })
+let fireball: Sprite = null
 let ball: Sprite = null
 let paddle: Sprite = null
 let ballVy = 0
