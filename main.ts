@@ -2,11 +2,23 @@ namespace SpriteKind {
     export const ball = SpriteKind.create()
     export const missdetector = SpriteKind.create()
     export const typefireball = SpriteKind.create()
+    export const paddle = SpriteKind.create()
+    export const clock = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile5`)
     info.changeScoreBy(4)
+    if (randint(0, 100) <= 25) {
+        info.changeLifeBy(1)
+        paddle.changeScale(0.35, ScaleAnchor.Middle)
+    }
+})
+sprites.onOverlap(SpriteKind.clock, SpriteKind.paddle, function (sprite, otherSprite) {
+    sprites.destroy(clock)
+    ballVx = randint(ballspeed - randint(10, 35), ballspeed)
+    ballVy = ball.vy - randint(10, 35)
+    ball.setVelocity(randint(50, 75), randint(50, 75))
 })
 function addMissDetector () {
     MD = sprites.create(img`
@@ -18,11 +30,38 @@ function addMissDetector () {
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     advancelevel()
 })
+function spawnclock () {
+    let clockspeed = 0
+    clock = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . 5 f f f f f f f f f 5 . . . 
+        . 5 f f 1 1 1 f 1 1 1 f f 5 . . 
+        5 f f 1 1 1 1 f 1 1 1 1 f f 5 . 
+        f f 1 f 1 1 1 1 1 1 1 f 1 f f . 
+        f 1 1 1 f 1 1 1 1 1 f 1 1 1 f . 
+        f 1 1 1 1 1 1 f 1 1 1 1 1 1 f . 
+        f 1 1 1 1 1 1 f 1 1 1 1 1 1 f . 
+        f f f 1 f f f f 1 1 1 1 f f f . 
+        f 1 1 1 1 1 1 1 1 1 1 1 1 1 f . 
+        f 1 1 1 1 1 1 1 1 1 1 1 1 1 f . 
+        f 1 1 1 f 1 1 1 1 1 f 1 1 1 f . 
+        f f 1 f 1 1 1 1 1 1 1 f 1 f f . 
+        5 f f 1 1 1 1 f 1 1 1 1 f f 5 . 
+        . 5 f f 1 1 1 f 1 1 1 f f 5 . . 
+        . . 5 f f f f f f f f f 5 . . . 
+        `, SpriteKind.clock)
+    clock.setPosition(73, 58)
+    clock.setVelocity(clockspeed, clockspeed)
+    clock.setStayInScreen(true)
+    clock.setBounceOnWall(true)
+    clock.setScale(0.85, ScaleAnchor.Middle)
+    clock.setVelocity(paddle.x - clock.x, paddle.y - clock.y)
+}
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile3`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile1`)
     info.changeScoreBy(2)
-    if (randint(0, 100) >= 50) {
+    if (randint(0, 100) <= 40) {
         SpawnFireball()
     }
 })
@@ -35,6 +74,11 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile1`, function (sprite, loc
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile`)
     info.changeScoreBy(3)
+})
+sprites.onOverlap(SpriteKind.typefireball, SpriteKind.paddle, function (sprite, otherSprite) {
+    sprites.destroy(paddle)
+    game.gameOver(false)
+    game.setGameOverMessage(false, "GAME OVER!")
 })
 function bounceball (ball: Sprite) {
     ballVx = randint(ballspeed / 3, ballspeed)
@@ -50,13 +94,16 @@ function advancelevel () {
     game.splash("Level" + level)
     spawnball()
 }
+sprites.onOverlap(SpriteKind.paddle, SpriteKind.ball, function (sprite, otherSprite) {
+    bounceball(otherSprite)
+    otherSprite.y = paddle.top - 1
+})
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile5`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(5)
-    if (randint(0, 100) <= 25) {
-        info.changeLifeBy(1)
-        paddle.changeScale(0.35, ScaleAnchor.Middle)
+    if (randint(0, 100) <= 15) {
+        spawnclock()
     }
 })
 sprites.onOverlap(SpriteKind.ball, SpriteKind.missdetector, function (sprite, otherSprite) {
@@ -90,6 +137,9 @@ function spawnball () {
     ball.setBounceOnWall(true)
     ball.setScale(0.35, ScaleAnchor.Middle)
 }
+sprites.onOverlap(SpriteKind.typefireball, SpriteKind.missdetector, function (sprite, otherSprite) {
+    sprites.destroy(fireball)
+})
 function SpawnFireball () {
     let fireballspeed = 0
     fireball = sprites.create(img`
@@ -110,10 +160,11 @@ function SpawnFireball () {
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         `, SpriteKind.typefireball)
-    ball.setPosition(73, 58)
+    fireball.setPosition(73, 58)
     fireball.setVelocity(fireballspeed, fireballspeed)
-    ball.setBounceOnWall(true)
-    ball.setScale(0.35, ScaleAnchor.Middle)
+    fireball.setStayInScreen(true)
+    fireball.setBounceOnWall(true)
+    fireball.setScale(0.8, ScaleAnchor.Middle)
     fireball.setVelocity(paddle.x - fireball.x, paddle.y - fireball.y)
 }
 function spawnpaddle () {
@@ -134,28 +185,25 @@ function spawnpaddle () {
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Player)
+        `, SpriteKind.paddle)
     paddle.setPosition(80, 110)
     controller.moveSprite(paddle, 100, 0)
     paddle.setStayInScreen(true)
     paddle.setScale(1.2, ScaleAnchor.Middle)
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.ball, function (sprite, otherSprite) {
-    bounceball(otherSprite)
-    otherSprite.y = paddle.top + 1
-})
 let fireball: Sprite = null
+let MD: Sprite = null
 let ball: Sprite = null
-let paddle: Sprite = null
 let ballVy = 0
 let ballVx = 0
-let MD: Sprite = null
+let clock: Sprite = null
+let paddle: Sprite = null
 let ballspeed = 0
 let level = 0
 let levelMaps: tiles.TileMapData[] = []
 levelMaps = [tilemap`level2`, tilemap`level23`, tilemap`level0`]
 level = 0
-ballspeed = 100
+ballspeed = 80
 info.setScore(0)
 advancelevel()
 spawnpaddle()
