@@ -16,6 +16,7 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile`, function (sprite, loca
 })
 sprites.onOverlap(SpriteKind.clock, SpriteKind.paddle, function (sprite, otherSprite) {
     sprites.destroy(clock)
+    info.startCountdown(5)
     ballVx = randint(ballspeed - randint(10, 35), ballspeed)
     ballVy = ball.vy - randint(10, 35)
     ball.setVelocity(randint(50, 75), randint(50, 75))
@@ -65,10 +66,18 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile3`, function (sprite, loc
         SpawnFireball()
     }
 })
+info.onScore(58, function () {
+    game.splash("Level Passed")
+    advancelevel()
+})
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(1)
+})
+info.onCountdownEnd(function () {
+    sprites.destroyAllSpritesOfKind(SpriteKind.ball)
+    spawnball()
 })
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile1`, function (sprite, location) {
     bounceball(sprite)
@@ -89,10 +98,13 @@ function bounceball (ball: Sprite) {
     ball.setVelocity(ballVx, ballVy)
 }
 function advancelevel () {
+    totalscoreneeded += levelscoresneeded[level]
     tiles.setCurrentTilemap(levelMaps[level])
     level += 1
     game.splash("Level" + level)
-    spawnball()
+    info.startCountdown(3)
+    sprites.destroyAllSpritesOfKind(SpriteKind.ball)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Player)
 }
 sprites.onOverlap(SpriteKind.paddle, SpriteKind.ball, function (sprite, otherSprite) {
     bounceball(otherSprite)
@@ -135,6 +147,7 @@ function spawnball () {
     ball.setPosition(73, 58)
     ball.setVelocity(ballspeed, ballspeed)
     ball.setBounceOnWall(true)
+    ball.setStayInScreen(true)
     ball.setScale(0.35, ScaleAnchor.Middle)
 }
 sprites.onOverlap(SpriteKind.typefireball, SpriteKind.missdetector, function (sprite, otherSprite) {
@@ -192,6 +205,7 @@ function spawnpaddle () {
     paddle.setScale(1.2, ScaleAnchor.Middle)
 }
 let fireball: Sprite = null
+let totalscoreneeded = 0
 let MD: Sprite = null
 let ball: Sprite = null
 let ballVy = 0
@@ -200,11 +214,19 @@ let clock: Sprite = null
 let paddle: Sprite = null
 let ballspeed = 0
 let level = 0
+let levelscoresneeded: number[] = []
 let levelMaps: tiles.TileMapData[] = []
-levelMaps = [tilemap`level2`, tilemap`level23`, tilemap`level0`]
+levelMaps = [tilemap`level0`, tilemap`level23`, tilemap`level2`]
+levelscoresneeded = [58, 68, 118]
 level = 0
 ballspeed = 80
+info.setLife(3)
 info.setScore(0)
 advancelevel()
 spawnpaddle()
 addMissDetector()
+game.onUpdate(function () {
+    if (info.score() >= totalscoreneeded) {
+        advancelevel()
+    }
+})
