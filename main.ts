@@ -5,13 +5,12 @@ namespace SpriteKind {
     export const paddle = SpriteKind.create()
     export const clock = SpriteKind.create()
 }
-scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile7`, function (sprite, location) {
     bounceball(sprite)
-    tiles.setTileAt(location, assets.tile`myTile5`)
-    info.changeScoreBy(4)
-    if (randint(0, 100) <= 25) {
-        info.changeLifeBy(1)
-        paddle.changeScale(0.35, ScaleAnchor.Middle)
+    tiles.setTileAt(location, assets.tile`myTile6`)
+    info.changeScoreBy(5)
+    if (randint(0, 100) <= 15) {
+        spawnclock()
     }
 })
 sprites.onOverlap(SpriteKind.clock, SpriteKind.paddle, function (sprite, otherSprite) {
@@ -30,6 +29,16 @@ function addMissDetector () {
 }
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     advancelevel()
+})
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile4`, function (sprite, location) {
+    bounceball(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+})
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile0`, function (sprite, location) {
+    bounceball(sprite)
+    tiles.setTileAt(location, assets.tile`myTile5`)
+    info.changeScoreBy(3)
 })
 function spawnclock () {
     let clockspeed = 0
@@ -58,27 +67,17 @@ function spawnclock () {
     clock.setScale(0.85, ScaleAnchor.Middle)
     clock.setVelocity(paddle.x - clock.x, paddle.y - clock.y)
 }
-scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile3`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
     bounceball(sprite)
-    tiles.setTileAt(location, assets.tile`myTile1`)
+    tiles.setTileAt(location, assets.tile`myTile0`)
     info.changeScoreBy(2)
     if (randint(0, 100) <= 40) {
         SpawnFireball()
     }
 })
-scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
-    bounceball(sprite)
-    tiles.setTileAt(location, assets.tile`transparency16`)
-    info.changeScoreBy(1)
-})
 info.onCountdownEnd(function () {
     sprites.destroyAllSpritesOfKind(SpriteKind.ball)
     spawnball()
-})
-scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile1`, function (sprite, location) {
-    bounceball(sprite)
-    tiles.setTileAt(location, assets.tile`myTile`)
-    info.changeScoreBy(3)
 })
 sprites.onOverlap(SpriteKind.typefireball, SpriteKind.paddle, function (sprite, otherSprite) {
     sprites.destroy(paddle)
@@ -111,10 +110,11 @@ sprites.onOverlap(SpriteKind.paddle, SpriteKind.ball, function (sprite, otherSpr
 })
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile5`, function (sprite, location) {
     bounceball(sprite)
-    tiles.setTileAt(location, assets.tile`transparency16`)
-    info.changeScoreBy(5)
-    if (randint(0, 100) <= 15) {
-        spawnclock()
+    tiles.setTileAt(location, assets.tile`myTile7`)
+    info.changeScoreBy(4)
+    if (randint(0, 100) <= 25) {
+        info.changeLifeBy(1)
+        paddle.changeScale(0.35, ScaleAnchor.Middle)
     }
 })
 sprites.onOverlap(SpriteKind.ball, SpriteKind.missdetector, function (sprite, otherSprite) {
@@ -205,17 +205,17 @@ function spawnpaddle () {
 }
 let fireball: Sprite = null
 let totalscoreneeded = 0
+let paddle: Sprite = null
 let MD: Sprite = null
 let ball: Sprite = null
 let ballVy = 0
 let ballVx = 0
 let clock: Sprite = null
-let paddle: Sprite = null
 let ballspeed = 0
 let level = 0
 let levelscoresneeded: number[] = []
 let levelMaps: tiles.TileMapData[] = []
-levelMaps = [tilemap`level5`, 1, tilemap`level2`]
+levelMaps = [tilemap`level5`, 1, tilemap`level19`]
 levelscoresneeded = [58, 68, 118]
 level = 0
 ballspeed = 80
