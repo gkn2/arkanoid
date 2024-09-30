@@ -60,15 +60,11 @@ function spawnclock () {
 }
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile3`, function (sprite, location) {
     bounceball(sprite)
-    tiles.setTileAt(location, assets.tile`myTile1`)
+    tiles.setTileAt(location, assets.tile`myTile0`)
     info.changeScoreBy(2)
     if (randint(0, 100) <= 40) {
         SpawnFireball()
     }
-})
-info.onScore(58, function () {
-    game.splash("Level Passed")
-    advancelevel()
 })
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
     bounceball(sprite)
@@ -105,6 +101,9 @@ function advancelevel () {
     info.startCountdown(3)
     sprites.destroyAllSpritesOfKind(SpriteKind.ball)
     sprites.destroyAllSpritesOfKind(SpriteKind.Player)
+    spawnball()
+    spawnpaddle()
+    addMissDetector()
 }
 sprites.onOverlap(SpriteKind.paddle, SpriteKind.ball, function (sprite, otherSprite) {
     bounceball(otherSprite)
@@ -216,15 +215,13 @@ let ballspeed = 0
 let level = 0
 let levelscoresneeded: number[] = []
 let levelMaps: tiles.TileMapData[] = []
-levelMaps = [tilemap`level0`, tilemap`level23`, tilemap`level2`]
+levelMaps = [tilemap`level5`, tilemap`level13`, tilemap`level19`]
 levelscoresneeded = [58, 68, 118]
 level = 0
 ballspeed = 80
 info.setLife(3)
 info.setScore(0)
 advancelevel()
-spawnpaddle()
-addMissDetector()
 game.onUpdate(function () {
     if (info.score() >= totalscoreneeded) {
         advancelevel()
