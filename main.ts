@@ -215,8 +215,8 @@ let ballspeed = 0
 let level = 0
 let levelscoresneeded: number[] = []
 let levelMaps: tiles.TileMapData[] = []
-levelMaps = [tilemap`level5`, tilemap`level7`, tilemap`level19`]
-levelscoresneeded = [58, 68, 118]
+levelMaps = [tilemap`level5`, tilemap`level13`, tilemap`level19`]
+levelscoresneeded = [52, 68, 128]
 level = 0
 ballspeed = 80
 info.setLife(3)
