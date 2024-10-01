@@ -67,6 +67,9 @@ function spawnclock () {
     clock.setScale(0.85, ScaleAnchor.Middle)
     clock.setVelocity(paddle.x - clock.x, paddle.y - clock.y)
 }
+function setdifficulty () {
+	
+}
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile0`)
@@ -80,7 +83,7 @@ info.onCountdownEnd(function () {
     spawnball()
 })
 sprites.onOverlap(SpriteKind.typefireball, SpriteKind.paddle, function (sprite, otherSprite) {
-    sprites.destroy(paddle)
+    sprites.destroy(otherSprite)
     game.gameOver(false)
     game.setGameOverMessage(false, "GAME OVER!")
 })
@@ -150,7 +153,7 @@ function spawnball () {
     ball.setScale(0.35, ScaleAnchor.Middle)
 }
 sprites.onOverlap(SpriteKind.typefireball, SpriteKind.missdetector, function (sprite, otherSprite) {
-    sprites.destroy(fireball)
+    sprites.destroy(sprite)
 })
 function SpawnFireball () {
     let fireballspeed = 0
@@ -174,8 +177,6 @@ function SpawnFireball () {
         `, SpriteKind.typefireball)
     fireball.setPosition(73, 58)
     fireball.setVelocity(fireballspeed, fireballspeed)
-    fireball.setStayInScreen(true)
-    fireball.setBounceOnWall(true)
     fireball.setScale(0.8, ScaleAnchor.Middle)
     fireball.setVelocity(paddle.x - fireball.x, paddle.y - fireball.y)
 }
@@ -215,15 +216,41 @@ let ballspeed = 0
 let level = 0
 let levelscoresneeded: number[] = []
 let levelMaps: tiles.TileMapData[] = []
+let difficulty = 3
 levelMaps = [tilemap`level5`, tilemap`level13`, tilemap`level19`]
 levelscoresneeded = [52, 68, 128]
 level = 0
 ballspeed = 80
 info.setLife(3)
 info.setScore(0)
+while (difficulty > 2) {
+    difficulty = game.askForNumber("Choose Difficulty: 0-2. Other numbers invalid.")
+}
+setdifficulty()
 advancelevel()
 game.onUpdate(function () {
     if (info.score() >= totalscoreneeded) {
         advancelevel()
+    }
+})
+game.onUpdateInterval(5000, function () {
+    if (difficulty == 0) {
+        for (let index = 0; index < randint(4, 7); index++) {
+            if (randint(1, 7) >= 4) {
+                SpawnFireball()
+            }
+        }
+    } else if (difficulty == 1) {
+        for (let index = 0; index < randint(5, 11); index++) {
+            if (randint(1, 11) >= 4) {
+                SpawnFireball()
+            }
+        }
+    } else if (difficulty == 2) {
+        for (let index = 0; index < randint(10, 16); index++) {
+            if (randint(1, 16) >= 4) {
+                SpawnFireball()
+            }
+        }
     }
 })
