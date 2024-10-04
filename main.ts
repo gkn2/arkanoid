@@ -9,7 +9,7 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile7`, function (sprite, loc
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile6`)
     info.changeScoreBy(5)
-    if (randint(0, 100) <= 15) {
+    if (randint(0, 100) <= randint(10, 20)) {
         spawnclock()
     }
 })
@@ -34,11 +34,21 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile4`, function (sprite, loc
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(1)
+    if (randint(0, 100) <= 40) {
+        SpawnFireball()
+    }
 })
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile0`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile5`)
     info.changeScoreBy(3)
+    if (randint(0, 100) <= randint(20, 30)) {
+        spawnclock()
+    }
+    if (randint(0, 100) >= 80) {
+        info.changeLifeBy(1)
+        paddle.changeScale(0.35, ScaleAnchor.Middle)
+    }
 })
 function spawnclock () {
     let clockspeed = 0
@@ -67,14 +77,11 @@ function spawnclock () {
     clock.setScale(0.85, ScaleAnchor.Middle)
     clock.setVelocity(paddle.x - clock.x, paddle.y - clock.y)
 }
-function setdifficulty () {
-	
-}
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile0`)
     info.changeScoreBy(2)
-    if (randint(0, 100) <= 40) {
+    if (randint(0, 100) <= 70) {
         SpawnFireball()
     }
 })
@@ -115,9 +122,9 @@ scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile5`, function (sprite, loc
     bounceball(sprite)
     tiles.setTileAt(location, assets.tile`myTile7`)
     info.changeScoreBy(4)
-    if (randint(0, 100) <= 25) {
+    if (randint(0, 100) <= randint(10, 15)) {
         info.changeLifeBy(1)
-        paddle.changeScale(0.35, ScaleAnchor.Middle)
+        paddle.changeScale(0.45, ScaleAnchor.Middle)
     }
 })
 sprites.onOverlap(SpriteKind.ball, SpriteKind.missdetector, function (sprite, otherSprite) {
@@ -202,7 +209,6 @@ function spawnpaddle () {
     paddle.setPosition(80, 110)
     controller.moveSprite(paddle, 100, 0)
     paddle.setStayInScreen(true)
-    paddle.setScale(1.2, ScaleAnchor.Middle)
 }
 let fireball: Sprite = null
 let totalscoreneeded = 0
@@ -220,13 +226,12 @@ let difficulty = 3
 levelMaps = [tilemap`level5`, tilemap`level13`, tilemap`level19`]
 levelscoresneeded = [52, 68, 128]
 level = 0
-ballspeed = 80
+ballspeed = 60
 info.setLife(3)
 info.setScore(0)
 while (difficulty > 2) {
     difficulty = game.askForNumber("Choose Difficulty: 0-2. Other numbers invalid.")
 }
-setdifficulty()
 advancelevel()
 game.onUpdate(function () {
     if (info.score() >= totalscoreneeded) {
@@ -235,18 +240,24 @@ game.onUpdate(function () {
 })
 game.onUpdateInterval(5000, function () {
     if (difficulty == 0) {
+        ballspeed = 60
+        paddle.setScale(1.45, ScaleAnchor.Middle)
         for (let index = 0; index < randint(4, 7); index++) {
             if (randint(1, 7) >= 4) {
                 SpawnFireball()
             }
         }
     } else if (difficulty == 1) {
+        ballspeed = 75
+        paddle.setScale(1.25, ScaleAnchor.Middle)
         for (let index = 0; index < randint(5, 11); index++) {
             if (randint(1, 11) >= 4) {
                 SpawnFireball()
             }
         }
     } else if (difficulty == 2) {
+        ballspeed = 90
+        paddle.setScale(1, ScaleAnchor.Middle)
         for (let index = 0; index < randint(10, 16); index++) {
             if (randint(1, 16) >= 4) {
                 SpawnFireball()
